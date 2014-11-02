@@ -33,7 +33,6 @@
 
 #include "uatraits/details/branch.hpp"
 #include "uatraits/details/definition.hpp"
-#include "uatraits/details/hash_utils.hpp"
 #include "uatraits/details/regex_definition.hpp"
 #include "uatraits/details/static_definition.hpp"
 #include "uatraits/details/string_definition.hpp"
@@ -177,7 +176,7 @@ detector_impl<Traits>::detect(const Traits &headers, Traits &traits) const {
 			header = header.substr(0, header.length() - sizeof (to_strip) + 1);
 		}
 
-		profiles_type::const_iterator pit = profiles_.find(md5(header));
+		profiles_type::const_iterator pit = profiles_.find(header);
 
 		if (profiles_.end() != pit) {
 			for (std::map<std::string, std::string>::const_iterator mit = pit->second.begin(),
@@ -217,7 +216,7 @@ detector_impl<Traits>::parse_profiles(xmlDocPtr doc)
 
 	xml_elems elems(root, "profile");
 	for (xml_elems::iterator i = elems.begin(), end = elems.end(); i != end; ++i) {
-		char const *id = xml_attr_text(*i, "id");
+		char const *id = xml_attr_text(*i, "url");
 
 		for (xmlNodePtr n = xmlFirstElementChild(*i); 0 != n; n = xmlNextElementSibling(n)) {
 			if (xmlStrncasecmp(n->name, (xmlChar const*) "define", sizeof("define")) == 0) {
